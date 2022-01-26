@@ -3,6 +3,9 @@
 def hello_1():
     print('hello from pc')
     print('this is john from mac')
+    print('some change from pc')
+
 
 def hello_2():
     print('Hi')
+    print('this is john from pc')
