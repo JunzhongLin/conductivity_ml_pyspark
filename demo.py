@@ -9,3 +9,7 @@ def hello_1():
 def hello_2():
     print('Hi')
     print('this is john from pc')
+
+
+def reset_test():
+    print('test for reset in git')
