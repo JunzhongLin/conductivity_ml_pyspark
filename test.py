@@ -65,12 +65,12 @@ if __name__ == '__main__':
              num_attrib
          )(array(col_attrib.to_list())).alias('atomic_number_output')])
 
-    df = (spark.read.format("jdbc")
-          .option("url", "jdbc:mysql://localhost/conductivity")
-          .option("driver", "com.mysql.jdbc.Driver")
-          .option("dbtable", "rawdata")
-          .option("user", "root")
-          .option("password", "QIlin618").load())
+    # df = (spark.read.format("jdbc")
+    #       .option("url", "jdbc:mysql://localhost/conductivity")
+    #       .option("driver", "com.mysql.jdbc.Driver")
+    #       .option("dbtable", "rawdata")
+    #       .option("user", "root")
+    #       .option("password", "QIlin618").load())
 
 
 
