@@ -7,6 +7,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import array, col, regexp_replace
 import udf_data_preparation as udf_prep
 from importlib import reload
+import custom_transformers as ct
+from pyspark.ml import Pipeline
+from pyspark.ml.feature import VectorAssembler
 
 '''
 ## prepare for the raw_df 
@@ -30,6 +33,8 @@ with open('./num_attrib.pickle', 'rb') as input_file:
     num_attrib = pickle.load(input_file)
 with open('./col_attrib.pickle', 'rb') as input_file:
     col_attrib = pickle.load(input_file)
+with open('./input_cols.pickle', 'rb') as input_file:
+    input_cols = pickle.load(input_file)
 
 # element_df = element_df.iloc[num_attrib, :]
 
@@ -57,13 +62,55 @@ if __name__ == '__main__':
         if col_name not in ('GLASNO', 'Year', 'Refer_Id', 'Patent', 'Sleg'):
             df = df.withColumn(col_name, col(col_name).cast('float'))
 
-    test_df = df.select(
+    with open('electron_prop_dict.pickle', 'rb') as f:
+        electron_property_dict = pickle.load(f)
+
+    '''
+    ### test for the udf functions
+        test_df = df.select(
         ['*',
          udf_prep.atomic_property_adder(
              element_df,
-             'atomic_number',
+             'mendeleev_number',
              num_attrib
-         )(array(col_attrib.to_list())).alias('atomic_number_output')])
+         )(array(col_attrib.to_list())).alias('mendeleev_number'),
+         udf_prep.electron_property_adder(
+             electron_property_dict,
+             's',
+             num_attrib
+         )(array(col_attrib.to_list())).alias('s_filled'),
+         udf_prep.electron_property_adder(
+             electron_property_dict,
+             's',
+             num_attrib,
+             filled=False
+         )(array(col_attrib.to_list())).alias('s_unfilled')
+         ]
+    )
+    
+    '''
+
+    '''
+    ### test for custom transformers
+
+    '''
+    atomic_model = ct.AtomicPropertyTransformer(
+        element_df,
+        'mendeleev_number',
+        num_attrib,
+        col_attrib
+    )
+    electron_model = ct.ElectronPropertyTransformer(
+        electron_property_dict,
+        's',
+        num_attrib,
+        col_attrib,
+        filled_bool=True
+    )
+    vec_assembler1 = VectorAssembler(inputCols=input_cols, outputCol='features')
+    pipe = Pipeline(stages=[atomic_model, electron_model])
+    pipe_model = pipe.fit(df)
+    df_example = pipe_model.transform(df)
 
     # df = (spark.read.format("jdbc")
     #       .option("url", "jdbc:mysql://localhost/conductivity")

@@ -80,7 +80,7 @@ def electron_property_adder(electron_prop_dict, property_id, num_attrib, filled=
         [StructField('{}_max'.format(e_key), FloatType(), False),
          StructField('{}_min'.format(e_key), FloatType(), False),
          StructField('{}_std'.format(e_key), FloatType(), False),
-         StructField('{}_mean'.format(e_key), FloatType(), False),
+         StructField('{}_mean'.format(e_key) , FloatType(), False),
          StructField('{}_mode1'.format(e_key), FloatType(), False),
          StructField('{}_mode2'.format(e_key), FloatType(), False),
          ]
