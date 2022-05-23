@@ -74,7 +74,7 @@ def electron_property_adder(electron_prop_dict, property_id, num_attrib, filled=
     else:
         e_key = property_id+'_unfilled'
 
-    electron_series = electron_prop_dict[e_key][num_attrib]
+    electron_series = np.array(electron_prop_dict[e_key])[num_attrib]
 
     schema = StructType(
         [StructField('{}_max'.format(e_key), FloatType(), False),

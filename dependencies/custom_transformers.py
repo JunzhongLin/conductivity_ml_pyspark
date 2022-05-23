@@ -20,8 +20,8 @@ class AtomicPropertyTransformer(Transformer):
              self.element_df,
              self.property_id,
              self.num_attrib
-            )(array(self.col_attrib.to_list()))
-        ).select(['*', '{}.*'.format(self.property_id)])
+            )(array(self.col_attrib))
+        ).select(['*', '{}.*'.format(self.property_id)]).drop(col('{}'.format(self.property_id)))
         return df
 
 
@@ -47,7 +47,7 @@ class ElectronPropertyTransformer(Transformer):
                  self.property_id,
                  self.num_attrib,
                  filled=self.filled_bool
-             )(array(self.col_attrib.to_list()))
-        ).select(['*', '{}.*'.format(self.e_key)])
+             )(array(self.col_attrib))
+        ).select(['*', '{}.*'.format(self.e_key)]).drop(col('{}'.format(self.e_key)))
 
         return df

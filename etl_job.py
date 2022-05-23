@@ -2,9 +2,8 @@
 etl_job.py
 ~~~~~~~~~~
 
-This Python module contains an example Apache Spark ETL job definition
-that implements best practices for production ETL jobs. It can be
-submitted to a Spark cluster (or locally) using the 'spark-submit'
+This Python module contains an example Apache Spark ETL job definition.
+It can be submitted to a Spark cluster (or locally) using the 'spark-submit'
 command found in the '/bin' directory of all Spark distributions
 (necessary for running any Spark job, locally or otherwise). For
 example, this example script can be executed as follows,
@@ -32,29 +31,46 @@ functions, such that the key Transform steps can be covered by tests
 and jobs or called from within another environment (e.g. a Jupyter or
 Zeppelin notebook).
 """
-
+from pyspark.sql.types import StructType
 from pyspark.sql import Row
 from pyspark.sql.functions import col, concat_ws, lit
 
 from dependencies.spark import start_spark
+import dependencies.custom_transformers as ct
+from pyspark.ml import Pipeline
+from pyspark.ml.feature import VectorAssembler
+
+import json
+from mendeleev import get_table
 
 
 def main():
-    """Main ETL script definition.
+    """
+    Main ETL script definition.
 
     :return: None
     """
     # start Spark application and get Spark session, logger and config
     spark, log, config = start_spark(
-        app_name='my_etl_job',
+        app_name='conductivity_etl_job',
         files=['configs/etl_config.json'])
 
     # log that main ETL job is starting
     log.warn('etl_job is up-and-running')
 
+    # load schema of db
+    with open('schema.json', 'r') as f:
+        schema_json = json.load(f)
+    schema = StructType.fromJson(schema_json)
+
+    # load config_dict
+    if not config:
+        with open('configs/etl_config.json', 'r') as f:
+            config = json.load(f)
+
     # execute ETL pipeline
-    data = extract_data(spark)
-    data_transformed = transform_data(data, config['steps_per_floor'])
+    data = extract_data(spark, schema)
+    data_transformed = transform_data(data, config)
     load_data(data_transformed)
 
     # log the success and terminate Spark application
@@ -63,21 +79,24 @@ def main():
     return None
 
 
-def extract_data(spark):
-    """Load data from Parquet file format.
+def extract_data(spark, schema):
+    """Load data from csv file format. In production, data will be read from SQL db
 
     :param spark: Spark session object.
     :return: Spark DataFrame.
     """
     df = (
-        spark
-        .read
-        .parquet('tests/test_data/employees'))
+        spark.read.format('csv')
+        .option('sep', ',')
+        .option('header', 'true')
+        .schema(schema)
+        .load('./raw_data/rawdata.csv')
+    )
 
     return df
 
 
-def transform_data(df, steps_per_floor_):
+def transform_data(df, config_dict):
     """Transform original dataset.
 
     :param df: Input DataFrame.
@@ -85,29 +104,45 @@ def transform_data(df, steps_per_floor_):
         Street.
     :return: Transformed DataFrame.
     """
-    df_transformed = (
-        df
-        .select(
-            col('id'),
-            concat_ws(
-                ' ',
-                col('first_name'),
-                col('second_name')).alias('name'),
-               (col('floor') * lit(steps_per_floor_)).alias('steps_to_desk')))
+    num_attrib = config_dict['num_attrib']
+    col_attrib = config_dict['col_attrib']
+    input_cols = config_dict['input_cols']
+    electron_property_dict = config_dict['electron_property_dict']
+    element_df = get_table('elements')
+
+    atomic_model = ct.AtomicPropertyTransformer(
+        element_df,
+        'mendeleev_number',
+        num_attrib,
+        col_attrib
+    )
+    electron_model = ct.ElectronPropertyTransformer(
+        electron_property_dict,
+        's',
+        num_attrib,
+        col_attrib,
+        filled_bool=True
+    )
+    vec_assembler1 = VectorAssembler(inputCols=input_cols, outputCol='features')
+    pipe = Pipeline(stages=[atomic_model, electron_model, vec_assembler1])
+    pipe_model = pipe.fit(df)
+
+    df_transformed = pipe_model.transform(df)
 
     return df_transformed
 
 
 def load_data(df):
-    """Collect data locally and write to CSV.
+    """Collect data locally and write to parquet.
 
     :param df: DataFrame to print.
     :return: None
     """
     (df
-     .coalesce(1)
      .write
-     .csv('loaded_data', mode='overwrite', header=True))
+     .mode('overwrite')
+     .parquet('transformed_data.parquet')
+     )
     return None
 
 
