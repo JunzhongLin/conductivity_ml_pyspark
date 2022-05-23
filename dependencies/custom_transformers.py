@@ -1,6 +1,6 @@
 from pyspark.ml import Transformer
 from pyspark.sql import DataFrame
-import udf_data_preparation as udf_prep
+import dependencies.udf_data_preparation as udf_prep
 from pyspark.sql.functions import array, col, regexp_replace
 
 

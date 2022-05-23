@@ -5,9 +5,9 @@ import pandas as pd
 import pickle
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import array, col, regexp_replace
-import udf_data_preparation as udf_prep
+import dependencies.udf_data_preparation as udf_prep
 from importlib import reload
-import custom_transformers as ct
+import dependencies.custom_transformers as ct
 from pyspark.ml import Pipeline
 from pyspark.ml.feature import VectorAssembler
 
