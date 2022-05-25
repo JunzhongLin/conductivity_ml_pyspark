@@ -5,7 +5,7 @@ spark.py
 Module containing helper function for use with Apache Spark
 """
 
-import __main__
+import sys
 
 from os import environ, listdir, path
 import json
@@ -56,7 +56,7 @@ def start_spark(app_name='my_spark_app', master='local[*]', jar_packages=[],
     """
 
     # detect execution environment
-    flag_repl = not(hasattr(__main__, '__file__'))
+    flag_repl = not(sys.stdout.isatty())
     flag_debug = 'DEBUG' in environ.keys()
 
     if not (flag_repl or flag_debug):
@@ -86,6 +86,7 @@ def start_spark(app_name='my_spark_app', master='local[*]', jar_packages=[],
 
     # create session and retrieve Spark logger object
     spark_sess = spark_builder.getOrCreate()
+    spark_sess.sparkContext.setLogLevel('WARN')
     spark_logger = logging.Log4j(spark_sess)
 
     # get config file if sent to cluster with --files

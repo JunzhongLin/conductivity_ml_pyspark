@@ -2,7 +2,7 @@
 etl_job.py
 ~~~~~~~~~~
 
-This Python module contains an example Apache Spark ETL job definition.
+This Python module contains a demo for the etl job from raw database for glass composition.
 It can be submitted to a Spark cluster (or locally) using the 'spark-submit'
 command found in the '/bin' directory of all Spark distributions
 (necessary for running any Spark job, locally or otherwise). For
@@ -25,11 +25,6 @@ to be executed by a driver process on the Spark master node.
 For more details on submitting Spark applications, please see here:
 http://spark.apache.org/docs/latest/submitting-applications.html
 
-Our chosen approach for structuring jobs is to separate the individual
-'units' of ETL - the Extract, Transform and Load parts - into dedicated
-functions, such that the key Transform steps can be covered by tests
-and jobs or called from within another environment (e.g. a Jupyter or
-Zeppelin notebook).
 """
 from pyspark.sql.types import StructType
 from pyspark.sql import Row
@@ -64,9 +59,9 @@ def main():
     schema = StructType.fromJson(schema_json)
 
     # load config_dict
-    if not config:
-        with open('configs/etl_config.json', 'r') as f:
-            config = json.load(f)
+    # if not config:
+    #     with open('configs/etl_config.json', 'r') as f:
+    #         config = json.load(f)
 
     # execute ETL pipeline
     data = extract_data(spark, schema)
@@ -124,7 +119,7 @@ def transform_data(df, config_dict):
         filled_bool=True
     )
     vec_assembler1 = VectorAssembler(inputCols=input_cols, outputCol='features')
-    pipe = Pipeline(stages=[atomic_model, electron_model, vec_assembler1])
+    pipe = Pipeline(stages=[atomic_model, electron_model])
     pipe_model = pipe.fit(df)
 
     df_transformed = pipe_model.transform(df)
