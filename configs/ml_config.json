@@ -1,0 +1,10 @@
+{
+  "seed": 42,
+  "test_size": 0.2,
+  "model_path": "./saved_model/",
+  "model_hyperparams": {
+    "maxDepth": 10,
+    "numTrees": 50
+  },
+  "model_log_dir": "./rf_model_log/"
+}

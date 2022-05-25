@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Wed Mar 09 14:52:18 CET 2022:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-017f-6ef3-aee8-000013165070 
+on database directory /Users/johnlin/Documents/Python projects/conductivity_ml_pyspark/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@3154d4b5 
+Loaded from file:/Users/johnlin/opt/anaconda3/envs/py37_spark/lib/python3.7/site-packages/pyspark/jars/derby-10.12.1.1.jar
+java.vendor=Homebrew
+java.runtime.version=1.8.0_302-bre_2021_08_14_22_53-b00
+user.dir=/Users/johnlin/Documents/Python projects/conductivity_ml_pyspark
+os.name=Mac OS X
+os.arch=x86_64
+os.version=10.14.6
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
