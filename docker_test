@@ -1,0 +1,14 @@
+docker run -v $(pwd)/app:/job/app \
+-v $(pwd)/data:/job/data \
+-it --name conduct --rm d572a345b9d6
+
+/opt/spark/bin/spark-submit \
+--master spark://localhost:7077 \
+--py-files ./app/dependencies/custom_transformers.py, ./app/dependencies/logging.py \
+--files /app/configs/etl_config.json \
+./app/etl_job.py
+
+/opt/spark/bin/spark-submit \
+--master spark://localhost:7077 \
+--files /app/configs/etl_config.json \
+./app/etl_job.py
