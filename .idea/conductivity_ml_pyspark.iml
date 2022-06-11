@@ -6,7 +6,7 @@
     </content>
     <content url="jar:///usr/local/Cellar/apache-spark/3.2.1/libexec/python/lib/py4j-0.10.9.3-src.zip!/" />
     <content url="jar:///usr/local/Cellar/apache-spark/3.2.1/libexec/python/lib/pyspark.zip!/" />
-    <orderEntry type="jdk" jdkName="Python 3.7 (conductivity_ml)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.7 (conduct-slim)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
