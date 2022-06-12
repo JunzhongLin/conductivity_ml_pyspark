@@ -29,7 +29,7 @@ SPARK_MASTER_LOG=/opt/spark/logs/spark-master.out \
 SPARK_WORKER_LOG=/opt/spark/logs/spark-worker.out \
 SPARK_WORKER_WEBUI_PORT=8080 \
 SPARK_WORKER_PORT=7000 \
-SPARK_MASTER="spark://spark-master:7077" \
+SPARK_MASTER="spark://docspark-master:7077" \
 SPARK_WORKLOAD="master"
 
 EXPOSE 8080 7077 7000
