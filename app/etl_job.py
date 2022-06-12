@@ -26,8 +26,8 @@ For more details on submitting Spark applications, please see here:
 http://spark.apache.org/docs/latest/submitting-applications.html
 
 """
-import findspark
-findspark.init()
+# import findspark
+# findspark.init()
 from pyspark.sql.types import StructType
 from pyspark.sql import Row
 from pyspark.sql.functions import col, concat_ws, lit

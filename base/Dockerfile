@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y curl vim wget software-properties-commo
 
 # Fix the value of PYTHONHASHSEED
 # Note: this is needed when you use Python 3.3 or greater
-ENV SPARK_VERSION=3.2.1 \
-HADOOP_VERSION=2.7 \
+ENV SPARK_VERSION=3.0.2 \
+HADOOP_VERSION=3.2 \
 SPARK_HOME=/opt/spark \
 PYTHONHASHSEED=1
 
@@ -29,7 +29,7 @@ SPARK_MASTER_LOG=/opt/spark/logs/spark-master.out \
 SPARK_WORKER_LOG=/opt/spark/logs/spark-worker.out \
 SPARK_WORKER_WEBUI_PORT=8080 \
 SPARK_WORKER_PORT=7000 \
-SPARK_MASTER="spark://docspark-master:7077" \
+SPARK_MASTER="spark://spark-master:7077" \
 SPARK_WORKLOAD="master"
 
 EXPOSE 8080 7077 7000

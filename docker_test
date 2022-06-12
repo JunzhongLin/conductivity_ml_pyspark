@@ -8,7 +8,14 @@ docker run -v $(pwd)/app:/job/app \
 --files /app/configs/etl_config.json \
 ./app/etl_job.py
 
-/opt/spark/bin/spark-submit \
---master spark://localhost:7077 \
---files /app/configs/etl_config.json \
+# workdir: /job
+/opt/spark/bin/spark-submit --master spark://spark-master:7077 \
+--deploy-mode client \
+--files ./app/configs/etl_config.json \
 ./app/etl_job.py
+
+
+/opt/spark/bin/spark-submit --master spark://spark-master:7077 \
+--deploy-mode client \
+./app/etl_job.py
+
