@@ -25,31 +25,42 @@ data from sciglass database (http://www.akosgmbh.de/sciglass/sciglass.htm) are u
 # Folder Structure
 
 ```bash
-root/
-├── __pycache__
-├── configs
-│ ├── etl_config.json
-│ └── ml_config.json
-├── dependencies
-│ ├── custom_transformers.py
-│ ├── logging_.py
-│ ├── spark.py
-│ └── udf_data_preparation_decrepit.py
-├── derby.log
-├── etl_job.py
-├── ml_dataset
-│ ├── test.parquet
-│ └── train.parquet
-├── ml_job.py
-├── raw_data
-│ └── rawdata.csv
+├── Dockerfile
+├── LICENSE.md
+├── app
+│   ├── configs
+│   │   ├── etl_config.json
+│   │   └── ml_config.json
+│   ├── dependencies
+│   │   ├── __init__.py
+│   │   ├── custom_transformers.py
+│   │   ├── logging_.py
+│   │   ├── spark.py
+│   │   ├── test.py
+│   │   └── udf_data_preparation_decrepit.py
+│   ├── etl_job.py
+│   ├── ml_job.py
+│   ├── model_log_dir
+│   ├── schema.json
+│   └── wordcount.py
+├── base
+│   ├── Dockerfile
+│   ├── README.md
+│   └── scripts
+│       ├── execute-step.sh
+│       ├── finish-step.sh
+│       └── wait-for-step.sh
+├── data
+│   ├── ml_dataset
+│   └── raw_data
+│       └── rawdata.csv
+├── doc
+│   └── project icon.jpeg
+├── docker-compose.yml
+├── docker_test
 ├── readme.md
-├── rf_model_log
-│ └── train_results.txt
-├── saved_model
-├── schema.json
-└── transformed_data.parquet
-
+├── requirements.txt
+└── start-spark.sh
 ```
 
 # Technical Details
@@ -65,8 +76,85 @@ https://www.nature.com/articles/s41598-018-35934-y
 Random Forest has been used for a demonstration purpose
 
 
-# Set-up
+# Set-up & How to use
+---
+- General Information
 
-(to be added)
+the etl_job.py and ml_job.py inside folder app are the two main demo spark job will be submitted for test.
+The wordcount.py in app folder is for basic test purpose. A simple standalone spark cluster will be built as
+a testing environment using docker solution. A docker-compose up action will achieve this goal.
+
+The docker compose will create following containers:
+
+container|Exposed ports
+---|---
+spark-master|9090 7077
+spark-worker-1|9091
+spark-worker-2|9092
+
+- Installation
+
+The following steps will describe how to install the test environment
+
+- Pre requisites
+
+* Docker installed, Docker-compose installed
+
+- build the base image
+
+the base image contains python and spark. The dockerfile can be found in /base
+the dockerfile is obtained by apply some editing the one provided from 
+https://dev.to/mvillarrealb/creating-a-spark-standalone-cluster-with-docker-and-docker-compose-2021-update-6l4
+
+```sh
+cd ./base
+docker build --tag john/pyspark:3.0.2-hadoop3.2-py3.7 .
+```
+
+- build the docker image with dependencies
+
+the docker file can be found in the root dir
+
+```sh
+docker build --tag conduct-ml-pyspark:0.3 .
+```
+
+- compose up the test cluster
+
+the docker-compose yml file can be found in the root dir
+
+```shell
+docker-compose up -d
+```
+
+- validate the cluster
+
+the webui port of master node can be accessed from localhost:7077
+
+
+- Binded volumes
+- 
+local volume will be amounted to the container
+
+Host Mount| Container Mount |Purpose
+---|-----------------|---
+app| /job/app        |Used to make available your app on all workers & master
+data| /job/data       | Used to make available your app's data on all workers & master
+
+- submit the job
+
+log into any node by
+```shell
+docker exec -it <container-id> /bin/bash
+```
+submit the job by
+```shell
+/opt/spark/bin/spark-submit /job/app/etl_job.py
+```
+
+to change the deploy mode, please go to the etl_job.py
+modify the master argument for the start_spark function
+
+
 
 
