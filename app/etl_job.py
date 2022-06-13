@@ -62,7 +62,7 @@ def main():
 
     # load config_dict
     # if not config:
-    #     with open('configs/etl_config.json', 'r') as f:
+    #     with open('./app/configs/etl_config.json', 'r') as f:
     #         config = json.load(f)
 
     # execute ETL pipeline
@@ -147,14 +147,3 @@ def load_data(df):
 if __name__ == '__main__':
     main()
 
-    """
-docker run -v $(pwd)/app:/job/app \
--v $(pwd)/data:/job/data \
---env PYSPARK_PYTHON=./environment/bin/python \
---env PYSPARK_DRIVER_PYTHON=python \
--it --name conduct \
--w /job 0c34462d17a8 \
---archives /job/app/conductivity_env.tar.gz#environment \
-/job/app/etl_job.py
-
-    """

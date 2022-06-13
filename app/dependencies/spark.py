@@ -4,7 +4,7 @@ spark.py
 
 Module containing helper function for use with Apache Spark
 """
-
+import os
 import sys
 from os import environ, listdir, path
 import json
@@ -13,7 +13,9 @@ from pyspark.sql import SparkSession
 from dependencies import logging_
 
 
-def start_spark(app_name='my_spark_app', master='local[*]', jar_packages=[],
+def start_spark(app_name='my_spark_app',
+                master='spark://spark-master:7077',
+                jar_packages=[],
                 files=[], spark_config={}):
     """Start Spark session, get Spark logger and load config files.
 
@@ -88,7 +90,15 @@ def start_spark(app_name='my_spark_app', master='local[*]', jar_packages=[],
     spark_logger = logging_.Log4j(spark_sess)
 
     # get config file if sent to cluster with --files
-    spark_files_dir = SparkFiles.getRootDirectory()
+    # sending file by --file will send the file to the cwd() in cluster mode
+    # sending file by setting the argument will send the file to
+    # the SparkFiles.getRootDirectory()
+
+    if files:
+        spark_files_dir = SparkFiles.getRootDirectory()
+    else:
+        spark_files_dir = os.getcwd()
+
     config_files = [filename
                     for filename in listdir(spark_files_dir)
                     if filename.endswith('config.json')]
