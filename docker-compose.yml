@@ -46,8 +46,8 @@ services:
       - SPARK_WORKLOAD=worker
       - SPARK_LOCAL_IP=spark-worker-b
     volumes:
-       - ../app:/job/app
-       - ../data:/job/data
+       - ./app:/job/app
+       - ./data:/job/data
 
 #  demo-database:
 #    image: postgres:11.7-alpine

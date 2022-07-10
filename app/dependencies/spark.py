@@ -4,6 +4,8 @@ spark.py
 
 Module containing helper function for use with Apache Spark
 """
+import __main__
+
 import os
 import sys
 from os import environ, listdir, path
@@ -14,7 +16,7 @@ from dependencies import logging_
 
 
 def start_spark(app_name='my_spark_app',
-                master='spark://spark-master:7077',
+                master='local[*]', local_mode=False,
                 jar_packages=[],
                 files=[], spark_config={}):
     """Start Spark session, get Spark logger and load config files.
@@ -56,10 +58,10 @@ def start_spark(app_name='my_spark_app',
     """
 
     # detect execution environment
-    flag_repl = not(sys.stdout.isatty())
-    flag_debug = 'DEBUG' in environ.keys()
+    # flag_repl = not(sys.stdout.isatty())
+    # flag_debug = 'DEBUG' in environ.keys()
 
-    if not (flag_repl or flag_debug):
+    if not local_mode:
         # get Spark session factory
         spark_builder = (
             SparkSession
@@ -90,14 +92,7 @@ def start_spark(app_name='my_spark_app',
     spark_logger = logging_.Log4j(spark_sess)
 
     # get config file if sent to cluster with --files
-    # sending file by --file will send the file to the cwd() in cluster mode
-    # sending file by setting the argument will send the file to
-    # the SparkFiles.getRootDirectory()
-
-    if files:
-        spark_files_dir = SparkFiles.getRootDirectory()
-    else:
-        spark_files_dir = os.getcwd()
+    spark_files_dir = SparkFiles.getRootDirectory()
 
     config_files = [filename
                     for filename in listdir(spark_files_dir)

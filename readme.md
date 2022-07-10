@@ -149,7 +149,8 @@ docker exec -it <container-id> /bin/bash
 ```
 submit the job by
 ```shell
-/opt/spark/bin/spark-submit /job/app/etl_job.py
+/opt/spark/bin/spark-submit --master spark://spark-master:7077 --files /job/app/configs/etl_conf
+ig.json /job/app/etl_job.py
 ```
 
 to change the deploy mode, please go to the etl_job.py

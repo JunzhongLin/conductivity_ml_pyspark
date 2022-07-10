@@ -50,7 +50,9 @@ def main():
     # start Spark application and get Spark session, logger and config
     spark, log, config = start_spark(
         app_name='conductivity_etl_job',
-        files=['./app/configs/etl_config.json'])
+        local_mode=False,  # change this to True for debug or test with iteractive console
+        # files=['./app/configs/etl_config.json']
+        )
 
     # log that main ETL job is starting
     log.warn('etl_job is up-and-running')
